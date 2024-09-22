@@ -2,22 +2,13 @@
 name = "hse-python-backend"
 version = "0.1.0"
 description = ""
-authors = ["Ilya Katun <katun.ilya@gmail.com>"]
+authors = ["Vloods <lmvibe@outlook.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.10"
 uvicorn = "^0.30.6"
-fastapi = "^0.114.2"
-requests = "^2.32.3"
 
-
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.6.5"
-
-
-[tool.poetry.group.test.dependencies]
-pytest = "^8.3.3"
 
 [build-system]
 requires = ["poetry-core"]
