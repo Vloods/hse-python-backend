@@ -2,7 +2,7 @@
 
 ## Init project
 
-### *(if not already done)* git clone repo
+### *(if not already done)* `git clone repo`
 ### Run `pip install -r hw_1/requirements` in your `venv`
 
 ## Run server
