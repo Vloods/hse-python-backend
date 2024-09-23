@@ -9,7 +9,7 @@ from typing import Any
 import pytest
 import requests
 
-HOST = "127.0.0.1"#"localhost"
+HOST = "localhost"
 PORT = 8000
 BASE_URL = f"http://{HOST}:{PORT}"
 
