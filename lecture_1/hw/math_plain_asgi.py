@@ -1,10 +1,11 @@
 import json
 from urllib.parse import parse_qs
 from typing import Dict, Any, Callable, Union, List
-from .maths import get_factorial, get_fibonacci, get_mean
+from lecture_1.hw.maths import get_factorial, get_fibonacci, get_mean
+from typing import Any, Awaitable, Callable
 
 
-async def app(scope: Dict[str, Any], receive: Callable, send: Callable) -> None:
+async def app(scope, receive, send) -> None:
     if scope["type"] == "http":
         path = scope["path"]
         method = scope["method"]
@@ -21,6 +22,14 @@ async def app(scope: Dict[str, Any], receive: Callable, send: Callable) -> None:
             response_body = json.dumps(
                 {"error": "Invalid path or parameters"}).encode("utf-8")
             await send_response(send, 404, response_body)
+    elif scope["type"] == "lifespan":
+        while True:
+            message = await receive()
+            if message["type"] == "lifespan.startup":
+                await send({"type": "lifespan.startup.complete"})
+            elif message["type"] == "lifespan.shutdown":
+                await send({"type": "lifespan.shutdown.complete"})
+                return
 
 
 async def handle_factorial(params: Dict[str, List[str]], send: Callable) -> None:
