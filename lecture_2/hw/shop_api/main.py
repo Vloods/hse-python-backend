@@ -1,6 +1,9 @@
-from fastapi import FastAPI, HTTPException, status, Response, Query
+from fastapi import FastAPI, HTTPException, status, Response, Query, WebSocket, WebSocketDisconnect
 from typing import Dict, List
 from .schemas import Item, ItemCreate, Cart, CartItem, ItemBase, ItemUpdate
+import string
+import random
+
 
 app = FastAPI(title="Shop API")
 
@@ -171,3 +174,29 @@ def add_item_to_cart(cart_id: int, item_id: int):
 
     return cart
 
+
+chat_rooms: Dict[str, List[WebSocket]] = {}
+
+def name_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+@app.websocket("/chat/{chat_name}")
+async def webscocket_endpoint(websocket: WebSocket, chat_name: str):
+    await websocket.accept()
+
+    if chat_name not in chat_rooms:
+        chat_rooms[chat_name] = []
+
+    chat_rooms[chat_name].append(websocket)
+
+    user_name = name_generator()
+
+    try:
+        while True:
+            message = await websocket.receive_text()
+            for user_connection in chat_rooms[chat_name]:
+                await user_connection.send_text(f"{user_name} :: {message}")
+    except WebSocketDisconnect:
+        chat_rooms[chat_name].remove(websocket)
+        if len(chat_rooms[chat_name]) == 0:
+            del chat_rooms[chat_name]
