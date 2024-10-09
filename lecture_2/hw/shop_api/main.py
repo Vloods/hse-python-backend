@@ -1,11 +1,21 @@
-from fastapi import FastAPI, HTTPException, status, Response, Query, WebSocket, WebSocketDisconnect
+from fastapi import (
+    FastAPI,
+    HTTPException,
+    status,
+    Response,
+    Query,
+    WebSocket,
+    WebSocketDisconnect,
+)
 from typing import Dict, List
 from .schemas import Item, ItemCreate, Cart, CartItem, ItemBase, ItemUpdate
+from prometheus_fastapi_instrumentator import Instrumentator
 import string
 import random
 
 
 app = FastAPI(title="Shop API")
+Instrumentator().instrument(app).expose(app)
 
 items_db: Dict[int, Item] = {}
 carts_db: Dict[int, Cart] = {}
@@ -60,9 +70,13 @@ def change_item(id: int, new_item: ItemBase):
 def update_item(id: int, item_update: ItemUpdate):
     item = items_db.get(id)
     if item.deleted:
-        raise HTTPException(status_code=304, detail="Attempt to update unaccesible field")
+        raise HTTPException(
+            status_code=304, detail="Attempt to update unaccesible field"
+        )
     if "deleted" in item_update:
-        raise HTTPException(status_code=422, detail="Attempt to update unaccesible field")
+        raise HTTPException(
+            status_code=422, detail="Attempt to update unaccesible field"
+        )
     if "name" in item_update:
         item.name = item_update.name
     if "price" in item_update:
@@ -145,7 +159,7 @@ def get_list_items(
         if not show_deleted and item.deleted:
             continue
         filtered_items.append(item)
-#    print(filtered_items)
+    #    print(filtered_items)
     return filtered_items[offset : offset + limit]
 
 
@@ -177,8 +191,10 @@ def add_item_to_cart(cart_id: int, item_id: int):
 
 chat_rooms: Dict[str, List[WebSocket]] = {}
 
+
 def name_generator(size=6, chars=string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
+    return "".join(random.choice(chars) for _ in range(size))
+
 
 @app.websocket("/chat/{chat_name}")
 async def webscocket_endpoint(websocket: WebSocket, chat_name: str):
