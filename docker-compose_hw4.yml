@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile_hw4
+    restart: always
+    ports:
+      - 8080:8080
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - 3000:3000
+    restart: always
+    volumes:
+      - ./.cache/grafana:/var/lib/grafana
+
+  prometheus:
+    image: prom/prometheus
+    volumes: 
+      - ./lecture_4/settings/prometheus/:/etc/prometheus/
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+    ports:
+      - 9090:9090
+    restart: always
+
+  locust:
+    image: locustio/locust:latest
+    ports:
+      - "8089:8089"  # Интерфейс Locust
+      - "9646:9646"
+    volumes:
+      - ./lecture_4/locustfile.py:/mnt/locust/locustfile.py
+    environment:
+      - LOCUST_HOST=http://app:8080  # URL вашего приложения
+    command: -f /mnt/locust/locustfile.py --host=http://app:8080
+    entrypoint: /bin/sh -c "pip install prometheus_client && locust -f /mnt/locust/locustfile.py --host http:/fastapi:8000"
+    depends_on:
+      - app
