@@ -216,3 +216,7 @@ async def webscocket_endpoint(websocket: WebSocket, chat_name: str):
         chat_rooms[chat_name].remove(websocket)
         if len(chat_rooms[chat_name]) == 0:
             del chat_rooms[chat_name]
+
+from fastapi import FastAPI
+
+app = FastAPI(title="Shop API")

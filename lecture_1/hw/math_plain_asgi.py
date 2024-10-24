@@ -103,3 +103,12 @@ async def send_response(send: Callable, status_code: int, response_body: bytes) 
         }
     )
     await send({"type": "http.response.body", "body": response_body})
+
+from typing import Any, Awaitable, Callable
+
+
+async def app(
+    scope: dict[str, Any],
+    receive: Callable[[], Awaitable[dict[str, Any]]],
+    send: Callable[[dict[str, Any]], Awaitable[None]],
+) -> None: ...

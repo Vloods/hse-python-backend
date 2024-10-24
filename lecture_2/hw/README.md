@@ -1,5 +1,4 @@
 # ДЗ
-
 <p align="center">
   <img src="grafana.jpg" width="500" title="Grafana dashboard" alt="">
 </p>
