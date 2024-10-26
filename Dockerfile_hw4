@@ -1,0 +1,17 @@
+FROM python:3.10-slim
+
+RUN apt-get update && apt-get install -y curl
+
+WORKDIR /app
+
+COPY ./lecture_4/requirements.txt ./requirements.txt
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r ./requirements.txt
+
+RUN python3 -m pip install --upgrade pip
+RUN pip3 install prometheus_client
+
+COPY . .
+
+CMD ["uvicorn", "lecture_4.demo_service.api.main:app", "--host", "localhost", "--port", "8080"]
